@@ -13,9 +13,13 @@ android {
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
+        debug {
+            buildConfigField "String", "BASE_URL", '"https://innocv.on.dolicloud.com"'
+        }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            buildConfigField "String", "BASE_URL", '"https://innocv.on.dolicloud.com"'
         }
     }
 }
@@ -41,4 +45,8 @@ dependencies {
     // Koin
     implementation "org.koin:koin-android:$koinVersion"
     implementation "org.koin:koin-android-viewmodel:$koinVersion"
+
+    // Test
+    testImplementation 'junit:junit:4.12'
+    testImplementation 'io.mockk:mockk:1.9.3'
 }
