@@ -5,13 +5,19 @@ import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.fuel.httpPost
 import org.koin.core.KoinComponent
 import org.koin.core.get
+import org.koin.core.inject
 import org.koin.core.qualifier.named
+import org.m0skit0.android.nomoredoli.data.http.HTTPClient
 
 internal object DolicloudPuncherImpl : DolicloudPuncher, KoinComponent {
 
+    private val httpClient by inject<HTTPClient>()
+
     override fun getToken(): IO<String> = IO {
-        get<String>(named("index URL")).httpGet().responseString().let { (request, response, result) ->
-            ""
+        get<String>(named("index URL")).httpGet().responseString().let { (_, response, result) ->
+            result.fold({
+                response.headers["Set-Cookie"].first().split(";").first()
+            }) { throw it.exception }
         }
     }
 
