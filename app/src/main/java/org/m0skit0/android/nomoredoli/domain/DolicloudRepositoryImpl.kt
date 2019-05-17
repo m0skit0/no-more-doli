@@ -16,9 +16,9 @@ internal object DolicloudRepositoryImpl : DolicloudRepository, KoinComponent {
     override fun punchAsync(user: String, password: String): Deferred<Either<Throwable, Unit>> =
         GlobalScope.async {
             with (puncher) {
-                getToken().attempt().unsafeRunSync().flatMap { token ->
-                    login(token, user, password).attempt().unsafeRunSync().flatMap { userId ->
-                        punch(token, userId).attempt().unsafeRunSync()
+                getSession().attempt().unsafeRunSync().flatMap { session ->
+                    login(session, user, password).attempt().unsafeRunSync().flatMap { userId ->
+                        punch(session, userId).attempt().unsafeRunSync()
                     }
                 }
             }
