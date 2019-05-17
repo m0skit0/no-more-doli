@@ -6,6 +6,8 @@ import org.koin.dsl.module
 import org.m0skit0.android.nomoredoli.BuildConfig
 import org.m0skit0.android.nomoredoli.data.DolicloudPuncher
 import org.m0skit0.android.nomoredoli.data.DolicloudPuncherImpl
+import org.m0skit0.android.nomoredoli.domain.DataRepository
+import org.m0skit0.android.nomoredoli.domain.DataRepositoryImpl
 import org.m0skit0.android.nomoredoli.domain.DolicloudRepository
 import org.m0skit0.android.nomoredoli.domain.DolicloudRepositoryImpl
 import org.m0skit0.android.nomoredoli.viewmodel.PunchViewModel
@@ -15,6 +17,7 @@ private const val BASE_URL = BuildConfig.BASE_URL
 internal val baseModules = module {
     single<DolicloudPuncher> { DolicloudPuncherImpl }
     single<DolicloudRepository> { DolicloudRepositoryImpl }
+    single<DataRepository> { DataRepositoryImpl }
     viewModel { PunchViewModel() }
 }
 
