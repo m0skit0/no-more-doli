@@ -1,11 +1,10 @@
 package org.m0skit0.android.nomoredoli.view
 
-import android.app.Activity
-import org.koin.core.KoinComponent
-import org.koin.core.inject
+import android.support.v7.app.AppCompatActivity
+import org.koin.android.viewmodel.ext.android.viewModel
 import org.m0skit0.android.nomoredoli.viewmodel.PunchViewModel
 
-internal class PunchActivity : Activity(), KoinComponent {
+internal class PunchActivity : AppCompatActivity() {
 
-    private val viewModel by viewModel<PunchViewModel>()
+    private val punchViewModel: PunchViewModel by viewModel()
 }
