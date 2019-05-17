@@ -18,7 +18,6 @@ internal object DataRepositoryImpl : DataRepository, KoinComponent {
 
     override fun getPassword(): Option<String> = getString(PASSWORD_KEY)
 
-    override fun getUserId(): Option<String> = getString(USERID_KEY)
 
     override fun saveUser(user: String) {
         saveString(USER_KEY, user)
@@ -26,10 +25,6 @@ internal object DataRepositoryImpl : DataRepository, KoinComponent {
 
     override fun savePassword(password: String) {
         saveString(PASSWORD_KEY, password)
-    }
-
-    override fun saveUserId(userId: String) {
-        saveString(USERID_KEY, userId)
     }
 
     private fun getString(key: String): Option<String> =

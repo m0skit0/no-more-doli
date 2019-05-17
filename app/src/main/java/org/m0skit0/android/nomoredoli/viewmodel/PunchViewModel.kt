@@ -10,6 +10,6 @@ internal class PunchViewModel : ViewModel(), KoinComponent {
     private val repository by inject<DolicloudRepository>()
 
     fun onClickPunch() {
-        repository.punch("", "")
+        repository.punchAsync("", "")
     }
 }
