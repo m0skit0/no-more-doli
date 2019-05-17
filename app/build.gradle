@@ -55,4 +55,6 @@ dependencies {
     // Test
     testImplementation 'junit:junit:4.12'
     testImplementation 'io.mockk:mockk:1.9.3'
+    testImplementation 'io.kotlintest:kotlintest-assertions-arrow:3.3.2'
+    testImplementation 'org.amshove.kluent:kluent:1.49'
 }
