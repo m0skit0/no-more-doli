@@ -19,9 +19,8 @@ import org.m0skit0.android.nomoredoli.data.http.HTTPException
 import org.m0skit0.android.nomoredoli.data.http.HTTPResponse
 import org.m0skit0.android.nomoredoli.di.stringModules
 
+// NOTE: running all tests in this class gives strange errors, still looking into it
 class TestDolicloudPuncherImpl {
-
-    private val emptyOKResponse = HTTPResponse(200, mapOf(), "")
 
     private val loginGetResponse by lazy {
         val body = javaClass.getResourceAsStream("/login_page.html")!!.bufferedReader().use { it.readText() }
