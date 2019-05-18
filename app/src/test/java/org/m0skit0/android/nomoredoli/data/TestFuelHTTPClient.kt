@@ -9,10 +9,8 @@ import io.kotlintest.matchers.maps.shouldContain
 import io.kotlintest.matchers.maps.shouldContainKey
 import io.kotlintest.matchers.maps.shouldContainKeys
 import io.mockk.MockKAnnotations
-import io.mockk.Runs
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
-import io.mockk.just
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
@@ -47,7 +45,8 @@ class TestFuelHTTPClient {
     @Before
     fun setup() {
         MockKAnnotations.init(this)
-        every { logger.logInfo(any()) } just Runs
+        every { logger.logInfo(any()) } answers { println(firstArg<String>()) }
+        every { logger.log(any()) } answers { firstArg<Throwable>().printStackTrace() }
         startKoin { modules(testModule) }
     }
 
@@ -119,7 +118,18 @@ class TestFuelHTTPClient {
         httpClient.httpPost(postUrl, bodyParameters = testParams).toPostParamsJson().run {
             shouldContain("param1", "1")
             shouldContain("param2", "2")
-            shouldContainKey("Content-Length")
+        }
+    }
+
+    @Test
+    fun `when post with params should have correct Content-Length`() {
+        var testParams = mapOf("param1" to "1")
+        httpClient.httpPost(postUrl, bodyParameters = testParams).toHeadersJson().run {
+            shouldContain("Content-Length", "8")
+        }
+        testParams = mapOf("param1" to "1", "param2" to "2")
+        httpClient.httpPost(postUrl, bodyParameters = testParams).toHeadersJson().run {
+            shouldContain("Content-Length", "17")
         }
     }
 

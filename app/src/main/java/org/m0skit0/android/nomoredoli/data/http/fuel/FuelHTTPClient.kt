@@ -28,8 +28,9 @@ internal object FuelHTTPClient : HTTPClient, KoinComponent {
     private fun tryHttp(block: () -> Either<Throwable, HTTPResponse>) = Try { block() }.toEither().flatten()
 
     private fun Request.perform(headers: Parameters): Either<Throwable, HTTPResponse> = header(headers).run {
-        if (request.method == Method.POST) appendHeader("Content-Length", request.body.length ?: 0)
+        if (request.method == Method.POST) appendHeader("Content-Length", request.parameters.calculateSize())
         logger.logInfo("Request: $request")
+        logger.logInfo("Request headers: ${request.headers}")
         responseString().let { (_, response, result) ->
             result.fold({
                 response.toHttpResponse().run { Either.right(this) }
@@ -50,4 +51,11 @@ internal object FuelHTTPClient : HTTPClient, KoinComponent {
 
     private fun MutableMap<String, Collection<String>>.toHeaders() =
             map { it.key to it.value.joinToString(";") }.associate { it }
+
+    private fun List<Pair<String, Any?>>.calculateSize() =
+        if (size == 0) 0 else {
+            fold(0) { acc, pair ->
+                acc + pair.first.length + pair.second.toString().length
+            } + (2 * size) - 1
+        }
 }
