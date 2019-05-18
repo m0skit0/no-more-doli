@@ -3,15 +3,21 @@ package org.m0skit0.android.nomoredoli.data.http.fuel
 import arrow.core.Either
 import arrow.core.Try
 import arrow.core.extensions.either.monad.flatten
+import com.github.kittinunf.fuel.core.Method
 import com.github.kittinunf.fuel.core.Request
 import com.github.kittinunf.fuel.core.Response
 import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.fuel.httpPost
+import org.koin.core.KoinComponent
+import org.koin.core.inject
 import org.m0skit0.android.nomoredoli.data.http.HTTPClient
 import org.m0skit0.android.nomoredoli.data.http.HTTPResponse
 import org.m0skit0.android.nomoredoli.data.http.Parameters
+import org.m0skit0.android.nomoredoli.util.Logger
 
-internal object FuelHTTPClient : HTTPClient {
+internal object FuelHTTPClient : HTTPClient, KoinComponent {
+
+    private val logger by inject<Logger>()
 
     override fun httpGet(url: String, headers: Parameters, urlParameters: Parameters): Either<Throwable, HTTPResponse> =
         tryHttp { url.httpGet(urlParameters.toFuelParameters()).perform(headers) }
@@ -21,12 +27,18 @@ internal object FuelHTTPClient : HTTPClient {
 
     private fun tryHttp(block: () -> Either<Throwable, HTTPResponse>) = Try { block() }.toEither().flatten()
 
-    private fun Request.perform(headers: Parameters): Either<Throwable, HTTPResponse> =
-        header(headers).responseString().let { (_, response, result) ->
+    private fun Request.perform(headers: Parameters): Either<Throwable, HTTPResponse> = header(headers).run {
+        if (request.method == Method.POST) appendHeader("Content-Length", request.body.length ?: 0)
+        logger.logInfo("Request: $request")
+        responseString().let { (_, response, result) ->
             result.fold({
                 response.toHttpResponse().run { Either.right(this) }
-            }) { Either.left(it.exception) }
+            }) {
+                logger.log(it.exception)
+                Either.left(it.exception)
+            }
         }
+    }
 
     private fun Response.toHttpResponse() = HTTPResponse(
         statusCode,
