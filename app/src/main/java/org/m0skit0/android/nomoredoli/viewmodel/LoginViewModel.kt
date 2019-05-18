@@ -37,7 +37,9 @@ internal class LoginViewModel : ViewModel(), KoinComponent {
     }
 
     fun checkLoginExists() {
-        dataRepository.getLogin().fold({ showLoading.value = false }) {
+        dataRepository.getLogin().fold({
+            showLoading.postValue(false)
+        }) {
             PunchActivity.launch()
         }
     }
