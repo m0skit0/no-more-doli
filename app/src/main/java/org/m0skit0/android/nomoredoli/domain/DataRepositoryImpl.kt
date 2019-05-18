@@ -8,23 +8,21 @@ import org.koin.core.get
 private const val PREFERENCES_FILE = "preferences"
 private const val USER_KEY = "user"
 private const val PASSWORD_KEY = "password"
-private const val USERID_KEY = "userId"
 
 internal object DataRepositoryImpl : DataRepository, KoinComponent {
 
     private val sharedPreferences = get<Context>().getSharedPreferences(PREFERENCES_FILE, Context.MODE_PRIVATE)
 
-    override fun getUser(): Option<String> = getString(USER_KEY)
+    override fun getLogin(): Option<Login> =
+        getString(USER_KEY).flatMap { user ->
+            getString(PASSWORD_KEY).flatMap { password ->
+                Option.just(Login(user, password))
+            }
+        }
 
-    override fun getPassword(): Option<String> = getString(PASSWORD_KEY)
-
-
-    override fun saveUser(user: String) {
-        saveString(USER_KEY, user)
-    }
-
-    override fun savePassword(password: String) {
-        saveString(PASSWORD_KEY, password)
+    override fun saveLogin(login: Login) {
+        saveString(USER_KEY, login.user)
+        saveString(PASSWORD_KEY, login.password)
     }
 
     private fun getString(key: String): Option<String> =

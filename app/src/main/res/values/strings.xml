@@ -5,4 +5,9 @@
     <string name="error_no_password">No password registered</string>
     <string name="error_punch">Error when punching</string>
     <string name="punch_success">Punch success!</string>
+    <string name="user">Login</string>
+    <string name="password">Password</string>
+    <string name="save">Save</string>
+    <string name="invalid_user">Invalid user!</string>
+    <string name="invalid_password">Invalid password!</string>
 </resources>

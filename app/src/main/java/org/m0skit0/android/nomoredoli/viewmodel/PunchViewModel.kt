@@ -22,8 +22,8 @@ internal class PunchViewModel : ViewModel(), KoinComponent {
     fun onClickPunch() {
         showLoading.value = true
         GlobalScope.launch {
-            dataRepository.getUser().fold({ R.string.error_no_user }) { user ->
-                dataRepository.getPassword().fold({ R.string.error_no_password }) { password ->
+            dataRepository.getLogin().fold({ R.string.error_no_user }) { login ->
+                with (login) {
                     punchRepository.punchAsync(user, password).await()
                         .fold({
                             it.log()
