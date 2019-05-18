@@ -9,7 +9,6 @@ import org.koin.core.inject
 import org.m0skit0.android.nomoredoli.R
 import org.m0skit0.android.nomoredoli.domain.DataRepository
 import org.m0skit0.android.nomoredoli.domain.DolicloudRepository
-import org.m0skit0.android.nomoredoli.util.log
 import org.m0skit0.android.nomoredoli.view.LoginActivity
 
 internal class PunchViewModel : ViewModel(), KoinComponent {
@@ -26,10 +25,7 @@ internal class PunchViewModel : ViewModel(), KoinComponent {
             dataRepository.getLogin().fold({ R.string.error_no_user }) { login ->
                 with (login) {
                     punchRepository.punchAsync(user, password).await()
-                        .fold({
-                            it.log()
-                            R.string.error_punch
-                        }) { R.string.punch_success }
+                        .fold({ R.string.error_punch }) { R.string.punch_success }
                 }
             }.let { message ->
                 showLoading.postValue(false)
