@@ -1,12 +1,15 @@
 package org.m0skit0.android.nomoredoli.data
 
 import arrow.effects.IO
-import com.github.kittinunf.fuel.httpPost
 import org.koin.core.KoinComponent
-import org.koin.core.get
 import org.koin.core.inject
 import org.koin.core.qualifier.named
 import org.m0skit0.android.nomoredoli.data.http.HTTPClient
+import kotlin.collections.first
+import kotlin.collections.getValue
+import kotlin.collections.mapOf
+import kotlin.collections.set
+import kotlin.collections.toMutableMap
 
 internal object DolicloudPuncherImpl : DolicloudPuncher, KoinComponent {
 
