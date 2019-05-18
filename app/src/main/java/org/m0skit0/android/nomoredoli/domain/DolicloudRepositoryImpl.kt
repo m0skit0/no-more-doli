@@ -17,8 +17,8 @@ internal object DolicloudRepositoryImpl : DolicloudRepository, KoinComponent {
         GlobalScope.async {
             with (puncher) {
                 getSession().attempt().unsafeRunSync().flatMap { session ->
-                    login(session, user, password).attempt().unsafeRunSync().flatMap { userId ->
-                        punch(session, userId).attempt().unsafeRunSync()
+                    login(session, user, password).attempt().unsafeRunSync().flatMap {
+                        punch(session).attempt().unsafeRunSync()
                     }
                 }
             }

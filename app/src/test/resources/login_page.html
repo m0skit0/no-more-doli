@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="robots" content="noindex">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author" content="Dolibarr Development Team">
+    <link rel="shortcut icon" type="image/x-icon" href="/theme/eldy/img/favicon.ico"/>
+    <title>Login @ 8.0.5</title>
+    <!-- Includes CSS for JQuery (Ajax library) -->
+    <link rel="stylesheet" type="text/css" href="/includes/jquery/css/base/jquery-ui.css?layout=classic&version=8.0.5">
+    <link rel="stylesheet" type="text/css" href="/includes/jquery/plugins/jnotify/jquery.jnotify-alt.min.css?layout=classic&version=8.0.5">
+    <link rel="stylesheet" type="text/css" href="/includes/jquery/plugins/select2/dist/css/select2.css?layout=classic&version=8.0.5">
+    <!-- Includes CSS for font awesome -->
+    <link rel="stylesheet" type="text/css" href="/theme/common/fontawesome/css/font-awesome.min.css?layout=classic&version=8.0.5">
+    <!-- Includes CSS for Dolibarr theme -->
+    <link rel="stylesheet" type="text/css" href="/theme/eldy/style.css.php?lang=en_US&amp;theme=eldy&amp;userid=0&amp;entity=1&amp;layout=classic&version=8.0.5">
+    <!-- Includes JS for JQuery -->
+    <script type="text/javascript" src="/includes/jquery/js/jquery.min.js?layout=classic&version=8.0.5"></script>
+    <script type="text/javascript" src="/includes/jquery/js/jquery-migrate.min.js?layout=classic&version=8.0.5"></script>
+    <script type="text/javascript" src="/includes/jquery/js/jquery-ui.min.js?layout=classic&version=8.0.5"></script>
+    <script type="text/javascript" src="/includes/jquery/plugins/tablednd/jquery.tablednd.min.js?layout=classic&version=8.0.5"></script>
+    <script type="text/javascript" src="/includes/jquery/plugins/jnotify/jquery.jnotify.min.js?layout=classic&version=8.0.5"></script>
+    <script type="text/javascript" src="/includes/jquery/plugins/flot/jquery.flot.min.js?layout=classic&version=8.0.5"></script>
+    <script type="text/javascript" src="/includes/jquery/plugins/flot/jquery.flot.pie.min.js?layout=classic&version=8.0.5"></script>
+    <script type="text/javascript" src="/includes/jquery/plugins/flot/jquery.flot.stack.min.js?layout=classic&version=8.0.5"></script>
+    <script type="text/javascript" src="/includes/jquery/plugins/select2/dist/js/select2.full.min.js?layout=classic&version=8.0.5"></script>
+    <!-- Includes JS for CKEditor -->
+    <script type="text/javascript">var CKEDITOR_BASEPATH = '/includes/ckeditor/ckeditor/';
+var ckeditorConfig = '/theme/eldy/ckeditor/config.js?layout=classic&version=8.0.5';
+var ckeditorFilebrowserBrowseUrl = '/core/filemanagerdol/browser/default/browser.php?Connector=/core/filemanagerdol/connectors/php/connector.php';
+var ckeditorFilebrowserImageBrowseUrl = '/core/filemanagerdol/browser/default/browser.php?Type=Image&Connector=/core/filemanagerdol/connectors/php/connector.php';
+</script>
+    <script type="text/javascript" src="/includes/ckeditor/ckeditor/ckeditor.js?layout=classic&version=8.0.5"></script>
+    <!-- Includes JS of Dolibarr -->
+    <script type="text/javascript" src="/core/js/lib_head.js.php?lang=en_US&layout=classic&version=8.0.5"></script>
+    <!-- Includes JS added by page -->
+    <script type="text/javascript" src="/includes/jstz/jstz.min.js"></script>
+    <script type="text/javascript" src="/core/js/dst.js"></script>
+</head>
+
+<!-- BEGIN PHP TEMPLATE LOGIN.TPL.PHP -->
+
+<body class="body bodylogin">
+
+<script type="text/javascript">
+$(document).ready(function () {
+	/* Set focus on correct field */
+	$('#username').focus(); 		// Warning to use this only on visible element
+});
+</script>
+
+<div class="login_center center">
+    <div class="login_vertical_align">
+
+        <form id="login" name="login" method="post" action="/index.php?mainmenu=home">
+            <input type="hidden" name="token" value="99e6df850222cdd97495944817ce73b2" />
+            <input type="hidden" name="loginfunction" value="loginfunction" />
+            <!-- Add fields to send local user information -->
+            <input type="hidden" name="tz" id="tz" value="" />
+            <input type="hidden" name="tz_string" id="tz_string" value="" />
+            <input type="hidden" name="dst_observed" id="dst_observed" value="" />
+            <input type="hidden" name="dst_first" id="dst_first" value="" />
+            <input type="hidden" name="dst_second" id="dst_second" value="" />
+            <input type="hidden" name="screenwidth" id="screenwidth" value="" />
+            <input type="hidden" name="screenheight" id="screenheight" value="" />
+            <input type="hidden" name="dol_hide_topmenu" id="dol_hide_topmenu" value="" />
+            <input type="hidden" name="dol_hide_leftmenu" id="dol_hide_leftmenu" value="" />
+            <input type="hidden" name="dol_optimize_smallscreen" id="dol_optimize_smallscreen" value="" />
+            <input type="hidden" name="dol_no_mouse_hover" id="dol_no_mouse_hover" value="" />
+            <input type="hidden" name="dol_use_jmobile" id="dol_use_jmobile" value="" />
+
+
+
+            <!-- Title with version -->
+            <div class="login_table_title center" title="Dolibarr 8.0.5">
+                <a class="login_table_title" href="https://www.dolibarr.org" target="_blank">Dolibarr 8.0.5</a></div>
+
+
+
+            <div class="login_table">
+
+                <div id="login_line1">
+
+                    <div id="login_left">
+                        <img alt="" src="/viewimage.php?cache=1&amp;modulepart=mycompany&amp;file=thumbs%2Flogo+430x430_small.png" id="img_logo" />
+                    </div>
+
+                    <br>
+
+                    <div id="login_right">
+
+                        <table class="left centpercent" title="Enter login details">
+                            <!-- Login -->
+                            <tr>
+                                <td class="nowrap center valignmiddle">
+                                    <!-- <span class="span-icon-user">-->
+                                    <span class="fa fa-user">
+<input type="text" id="username" placeholder="Login" name="username" class="flat input-icon-user minwidth150" value="" tabindex="1" autofocus="autofocus" />
+</span>
+                                </td>
+                            </tr>
+                            <!-- Password -->
+                            <tr>
+                                <td class="nowrap center valignmiddle">
+                                    <!--<span class="span-icon-password">-->
+                                    <span class="fa fa-key">
+<input id="password" placeholder="Password" name="password" class="flat input-icon-password minwidth150" type="password" value="" tabindex="2" autocomplete="off" />
+</span>
+                                </td></tr>
+                        </table>
+
+                    </div> <!-- end div login-right -->
+
+                </div> <!-- end div login-line1 -->
+
+
+                <div id="login_line2" style="clear: both">
+
+                    <!-- Button Connection -->
+                    <br><input type="submit" class="button" value="&nbsp; Login &nbsp;" tabindex="5" />
+
+                    <br><div class="center" style="margin-top: 8px;"><a class="alogin" href="/user/passwordforgotten.php">(Password forgotten?</a>&nbsp;-&nbsp;<a class="alogin" href="/support/index.php" target="_blank">Need help or support?)</a></div>
+                </div> <!-- end login line 2 -->
+
+            </div> <!-- end login table -->
+
+
+        </form>
+
+
+
+
+        <!-- authentication mode = dolibarr -->
+        <!-- cookie name used for this session = DOLSESSID_0affcf6bac3579bc73e1f0a0bd88e161 -->
+        <!-- urlfrom in this session =  -->
+
+        <!-- Common footer is not used for login page, this is same than footer but inside login tpl -->
+
+
+
+    </div>
+</div>	<!-- end of center -->
+
+
+</body>
+</html>
+<!-- END PHP TEMPLATE -->

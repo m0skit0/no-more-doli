@@ -13,9 +13,12 @@ internal object DolicloudPuncherImpl : DolicloudPuncher, KoinComponent {
     private val httpClient by inject<HTTPClient>()
     private val getTokenUrl by inject<String>(named("index URL"))
     private val postLoginUrl by inject<String>(named("login URL"))
+    private val punchUrl by inject<String>(named("punch URL"))
 
     private val tokenRegex = "<input type=\"hidden\" name=\"token\" value=\"(.*?)\" />".toRegex()
-    private val userIdRegex = "userid=(\\d+)".toRegex()
+    private val punchActionRegex = "<input type=\"hidden\" name=\"action\" value=\"(.*?)\">".toRegex()
+    private val punchUserIdRegex = "<input type=\"hidden\" name=\"idUser\" value=\"(.*?)\">".toRegex()
+    private val punchBoutonRegex = "<input type=\"submit\" class=\"button\" name=\"boutonE\" value=\"(.*?)\">".toRegex()
 
     private const val baseCookie = "hibext_instdsigdipv2=1;"
 
@@ -49,22 +52,35 @@ internal object DolicloudPuncherImpl : DolicloudPuncher, KoinComponent {
         }
     }
 
-    override fun login(session: Session, user: String, password: String): IO<String> = IO {
-        val headers = baseHeaders.toMutableMap()
-        headers["Cookie"] = "$baseCookie${session.sessionId}"
+    override fun login(session: Session, user: String, password: String): IO<Unit> = IO {
+        val headers = headerWithSessionId(session)
         val parameters = baseLoginParameters.toMutableMap()
         parameters["token"] = session.token
         parameters["username"] = user
         parameters["password"] = password
-        httpClient.httpPost(postLoginUrl, headers, parameters).fold({ throw it }) {
-            userIdRegex.find(it.body)!!.groups[1]!!.value
+        httpClient.httpPost(postLoginUrl, headers, parameters).fold({ throw it }) { Unit }
+    }
+
+    override fun punch(session: Session): IO<Unit> = IO {
+        val headers = headerWithSessionId(session)
+        httpClient.httpGet(punchUrl, headers).fold({ throw it }) { response ->
+            val userId = punchUserIdRegex.find(response.body)!!.groups[1]!!.value
+            val action = punchActionRegex.find(response.body)!!.groups[1]!!.value
+            val bouton = punchBoutonRegex.find(response.body)!!.groups[1]!!.value.replace(' ', '+')
+            val parameters = mapOf(
+                "comment" to "",
+                "idUser" to userId,
+                "action" to action,
+                "boutonE" to bouton
+            )
+            httpClient.httpPost(punchUrl, headers, parameters).fold({ throw it }) { Unit }
         }
     }
 
-    override fun punch(session: Session, userId: String): IO<Unit> = IO {
-        val parameters = listOf<Pair<String, Any?>>()
-        get<String>(named("punch URL")).httpPost(parameters).responseString().let { (request, response, result) ->
-
-        }
+    private fun headerWithSessionId(session: Session) = run {
+        val headers = baseHeaders.toMutableMap()
+        headers["Cookie"] = "$baseCookie${session.sessionId}"
+        headers
     }
+
 }
