@@ -53,7 +53,7 @@ internal object DolicloudPuncherImpl : DolicloudPuncher, KoinComponent {
     }
 
     override fun login(session: Session, user: String, password: String): IO<Unit> = IO {
-        val headers = headerWithSessionId(session)
+        val headers = baseHeaders.addSessionId(session).addReferer(postLoginUrl)
         val parameters = baseLoginParameters.toMutableMap()
         parameters["token"] = session.token
         parameters["username"] = user
@@ -62,7 +62,7 @@ internal object DolicloudPuncherImpl : DolicloudPuncher, KoinComponent {
     }
 
     override fun punch(session: Session): IO<Unit> = IO {
-        val headers = headerWithSessionId(session)
+        val headers = baseHeaders.addSessionId(session).addReferer(punchUrl)
         httpClient.httpGet(punchUrl, headers).fold({ throw it }) { getResponse ->
             val parameters = PunchParameters.fromResponse(getResponse).toMap()
             httpClient.httpPost(punchUrl, headers, parameters).fold({ throw it }) { postResponse ->
@@ -72,10 +72,12 @@ internal object DolicloudPuncherImpl : DolicloudPuncher, KoinComponent {
         }
     }
 
-    private fun headerWithSessionId(session: Session) =
-        baseHeaders.toMutableMap().apply {
+    private fun Map<String, String>.addSessionId(session: Session) =
+        toMutableMap().apply {
             this["Cookie"] = "$baseCookie${session.sessionId}"
         }
+
+    private fun Map<String, String>.addReferer(url: String) = toMutableMap().apply { this["Referer"] = url }
 
     private fun HTTPResponse.checkPunchResponse(parameters: Map<String, String>) {
         val oldBoutonKey = if (parameters.containsKey("boutonE")) "boutonE" else "boutonS"
