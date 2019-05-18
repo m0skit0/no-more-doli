@@ -8,22 +8,44 @@
             type="org.m0skit0.android.nomoredoli.viewmodel.PunchViewModel" />
     </data>
 
-    <FrameLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         xmlns:tools="http://schemas.android.com/tools"
         tools:context=".view.PunchActivity"
         android:orientation="vertical">
 
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/punch"
-            android:layout_gravity="center"
-            android:textSize="80sp"
-            android:padding="20dp"
-            android:onClick="@{() -> viewmodel.onClickPunch()}"
-            tools:text="Punch"/>
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="9">
 
-    </FrameLayout>
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/punch"
+                android:layout_gravity="center"
+                android:textSize="80sp"
+                android:padding="20dp"
+                android:onClick="@{() -> viewmodel.onClickPunch()}"
+                tools:text="Punch"/>
+
+        </FrameLayout>
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1">
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/clear_login"
+                android:layout_gravity="center"
+                android:onClick="@{() -> viewmodel.onClickClearLogin()}"
+                tools:text="Clear login"/>
+
+        </FrameLayout>
+
+    </LinearLayout>
 </layout>

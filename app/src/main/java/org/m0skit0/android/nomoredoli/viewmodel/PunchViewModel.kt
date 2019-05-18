@@ -10,6 +10,7 @@ import org.m0skit0.android.nomoredoli.R
 import org.m0skit0.android.nomoredoli.domain.DataRepository
 import org.m0skit0.android.nomoredoli.domain.DolicloudRepository
 import org.m0skit0.android.nomoredoli.util.log
+import org.m0skit0.android.nomoredoli.view.LoginActivity
 
 internal class PunchViewModel : ViewModel(), KoinComponent {
 
@@ -20,7 +21,7 @@ internal class PunchViewModel : ViewModel(), KoinComponent {
     val showLoading = MutableLiveData<Boolean>()
 
     fun onClickPunch() {
-        showLoading.value = true
+        showLoading.postValue(true)
         GlobalScope.launch {
             dataRepository.getLogin().fold({ R.string.error_no_user }) { login ->
                 with (login) {
@@ -35,5 +36,10 @@ internal class PunchViewModel : ViewModel(), KoinComponent {
                 toastMessage.postValue(message)
             }
         }
+    }
+
+    fun onClickClearLogin() {
+        dataRepository.clearLogin()
+        LoginActivity.launch()
     }
 }

@@ -25,6 +25,13 @@ internal object DataRepositoryImpl : DataRepository, KoinComponent {
         saveString(PASSWORD_KEY, login.password)
     }
 
+    override fun clearLogin() {
+        sharedPreferences.edit().apply {
+            remove(USER_KEY)
+            remove(PASSWORD_KEY)
+        }.apply()
+    }
+
     private fun getString(key: String): Option<String> =
         sharedPreferences.getString(key, null).run { Option.fromNullable(this) }
 
