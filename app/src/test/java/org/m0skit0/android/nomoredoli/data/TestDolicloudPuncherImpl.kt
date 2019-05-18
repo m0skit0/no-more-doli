@@ -37,7 +37,7 @@ class TestDolicloudPuncherImpl {
     }
 
     private val punchGetResponse by lazy {
-        val body = javaClass.getResourceAsStream("/punch_page.html")!!.bufferedReader().use { it.readText() }
+        val body = javaClass.getResourceAsStream("/punch_page_sign_in.html")!!.bufferedReader().use { it.readText() }
         HTTPResponse(200, mapOf(), body)
     }
 
@@ -112,7 +112,7 @@ class TestDolicloudPuncherImpl {
     }
 
     @Test
-    fun `when punch success should return nothing`() {
+    fun `when punch in success should return nothing`() {
         every { httpClient.httpGet(any(), any(), any()) } returns Either.right(punchGetResponse)
         every { httpClient.httpPost(any(), any(), any()) } answers {
             thirdArg<Map<String, String>>().run {

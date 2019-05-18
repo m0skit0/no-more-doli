@@ -1,7 +1,6 @@
 package org.m0skit0.android.nomoredoli.data
 
 import arrow.core.Either
-import arrow.core.getOrElse
 import com.github.kittinunf.fuel.core.HttpException
 import com.google.gson.Gson
 import io.kotlintest.assertions.arrow.either.shouldBeLeftOfType
@@ -9,9 +8,20 @@ import io.kotlintest.assertions.arrow.either.shouldBeRight
 import io.kotlintest.matchers.maps.shouldContain
 import io.kotlintest.matchers.maps.shouldContainKey
 import io.kotlintest.matchers.maps.shouldContainKeys
+import io.mockk.MockKAnnotations
+import io.mockk.Runs
+import io.mockk.every
+import io.mockk.impl.annotations.MockK
+import io.mockk.just
+import org.junit.After
+import org.junit.Before
 import org.junit.Test
+import org.koin.core.context.startKoin
+import org.koin.core.context.stopKoin
+import org.koin.dsl.module
 import org.m0skit0.android.nomoredoli.data.http.HTTPResponse
 import org.m0skit0.android.nomoredoli.data.http.fuel.FuelHTTPClient
+import org.m0skit0.android.nomoredoli.util.Logger
 import java.net.MalformedURLException
 import java.net.UnknownHostException
 
@@ -25,7 +35,26 @@ class TestFuelHTTPClient {
     private val status500 = "https://httpbin.org/status/500"
     private val headers = "https://httpbin.org/headers"
 
-    private val httpClient = FuelHTTPClient
+    private val httpClient by lazy { FuelHTTPClient }
+
+    @MockK
+    private lateinit var logger: Logger
+
+    private val testModule = module {
+        factory { logger }
+    }
+
+    @Before
+    fun setup() {
+        MockKAnnotations.init(this)
+        every { logger.logInfo(any()) } just Runs
+        startKoin { modules(testModule) }
+    }
+
+    @After
+    fun cleanup() {
+        stopKoin()
+    }
 
     @Test
     fun `when malformed URL should return error`() {
@@ -90,6 +119,7 @@ class TestFuelHTTPClient {
         httpClient.httpPost(postUrl, bodyParameters = testParams).toPostParamsJson().run {
             shouldContain("param1", "1")
             shouldContain("param2", "2")
+            shouldContainKey("Content-Length")
         }
     }
 
@@ -111,7 +141,9 @@ class TestFuelHTTPClient {
     private fun Either<Throwable, HTTPResponse>.toPostParamsJson() = toMapJson().getValue("form")
 
     private fun Either<Throwable, HTTPResponse>.toMapJson() =
-        getOrElse { throw Exception() }.body.run {
-            Gson().fromJson<Map<String, Map<String, String>>>(this, Map::class.java)
+        fold({ throw it }) { response ->
+            response.body.run {
+                Gson().fromJson<Map<String, Map<String, String>>>(this, Map::class.java)
+            }
         }
 }
