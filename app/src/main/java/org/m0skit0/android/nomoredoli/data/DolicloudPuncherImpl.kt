@@ -5,11 +5,8 @@ import org.koin.core.KoinComponent
 import org.koin.core.inject
 import org.koin.core.qualifier.named
 import org.m0skit0.android.nomoredoli.data.http.HTTPClient
-import kotlin.collections.first
-import kotlin.collections.getValue
-import kotlin.collections.mapOf
+import org.m0skit0.android.nomoredoli.data.http.HTTPResponse
 import kotlin.collections.set
-import kotlin.collections.toMutableMap
 
 internal object DolicloudPuncherImpl : DolicloudPuncher, KoinComponent {
 
@@ -21,7 +18,7 @@ internal object DolicloudPuncherImpl : DolicloudPuncher, KoinComponent {
     private val tokenRegex = "<input type=\"hidden\" name=\"token\" value=\"(.*?)\" />".toRegex()
     private val punchActionRegex = "<input type=\"hidden\" name=\"action\" value=\"(.*?)\">".toRegex()
     private val punchUserIdRegex = "<input type=\"hidden\" name=\"idUser\" value=\"(.*?)\">".toRegex()
-    private val punchBoutonRegex = "<input type=\"submit\" class=\"button\" name=\"boutonE\" value=\"(.*?)\">".toRegex()
+    private val punchBoutonRegex = "<input type=\"submit\" class=\"button\" name=\"(bouton[ES])\" value=\"(.*?)\">".toRegex()
 
     private const val baseCookie = "hibext_instdsigdipv2=1;"
 
@@ -66,24 +63,47 @@ internal object DolicloudPuncherImpl : DolicloudPuncher, KoinComponent {
 
     override fun punch(session: Session): IO<Unit> = IO {
         val headers = headerWithSessionId(session)
-        httpClient.httpGet(punchUrl, headers).fold({ throw it }) { response ->
-            val userId = punchUserIdRegex.find(response.body)!!.groups[1]!!.value
-            val action = punchActionRegex.find(response.body)!!.groups[1]!!.value
-            val bouton = punchBoutonRegex.find(response.body)!!.groups[1]!!.value.replace(' ', '+')
-            val parameters = mapOf(
-                "comment" to "",
-                "idUser" to userId,
-                "action" to action,
-                "boutonE" to bouton
-            )
-            httpClient.httpPost(punchUrl, headers, parameters).fold({ throw it }) { Unit }
+        httpClient.httpGet(punchUrl, headers).fold({ throw it }) { getResponse ->
+            val parameters = PunchParameters.fromResponse(getResponse).toMap()
+            httpClient.httpPost(punchUrl, headers, parameters).fold({ throw it }) { postResponse ->
+                postResponse.checkPunchResponse(parameters)
+                Unit
+            }
         }
     }
 
-    private fun headerWithSessionId(session: Session) = run {
-        val headers = baseHeaders.toMutableMap()
-        headers["Cookie"] = "$baseCookie${session.sessionId}"
-        headers
+    private fun headerWithSessionId(session: Session) =
+        baseHeaders.toMutableMap().apply {
+            this["Cookie"] = "$baseCookie${session.sessionId}"
+        }
+
+    private fun HTTPResponse.checkPunchResponse(parameters: Map<String, String>) {
+        val oldBoutonKey = parameters["boutonE"] ?: parameters.getValue("boutonS")
+        val newBoutonKey = punchBoutonRegex.find(body)!!.groups[1]!!.value
+        if (oldBoutonKey == newBoutonKey) throw IllegalStateException("bouton value didn't change: still is $oldBoutonKey")
     }
 
+    private data class PunchParameters(
+        val idUser: Pair<String, String>,
+        val action: Pair<String, String>,
+        val bouton: Pair<String, String>,
+        val comment: Pair<String, String>
+    ) {
+        companion object {
+            fun fromResponse(response: HTTPResponse) = run {
+                with (punchUserIdRegex) {
+                    val idUser = "idUser" to find(response.body)!!.groups[1]!!.value
+                    val action = "action" to find(response.body)!!.groups[1]!!.value
+                    val bouton = punchBoutonRegex.find(response.body)!!.run {
+                        val key = groups[1]!!.value
+                        val value = groups[2]!!.value.replace(' ', '+')
+                        key to value
+                    }
+                    PunchParameters(idUser, action, bouton, "comment" to "")
+                }
+            }
+        }
+
+        fun toMap() = mapOf(idUser, action, bouton, comment)
+    }
 }
