@@ -36,8 +36,13 @@ class TestDolicloudPuncherImpl {
         HTTPResponse(200, mapOf(), body)
     }
 
-    private val punchGetResponse by lazy {
+    private val punchSignInGetResponse by lazy {
         val body = javaClass.getResourceAsStream("/punch_page_sign_in.html")!!.bufferedReader().use { it.readText() }
+        HTTPResponse(200, mapOf(), body)
+    }
+
+    private val punchSignOutPostResponse by lazy {
+        val body = javaClass.getResourceAsStream("/punch_page_sign_out.html")!!.bufferedReader().use { it.readText() }
         HTTPResponse(200, mapOf(), body)
     }
 
@@ -50,22 +55,22 @@ class TestDolicloudPuncherImpl {
     private val idUser = "95"
     private val action = "add"
     private val boutonE = "Sign+In"
+    private val boutonS = "Sign Out"
 
     private val user = "user"
     private val password = "password"
 
-    private val testModule = module {
-        single(override = true) { httpClient }
-    }
-
     @MockK
     private lateinit var httpClient: HTTPClient
+
+    private val testModule = module {
+        factory { httpClient }
+    }
 
     @Before
     fun setup() {
         MockKAnnotations.init(this)
         startKoin { modules(testModule, stringModules) }
-//        startKoin { modules(baseModules, stringModules) }
     }
 
     @After
@@ -106,14 +111,14 @@ class TestDolicloudPuncherImpl {
 
     @Test
     fun `when punch post error should return error`() {
-        every { httpClient.httpGet(any(), any(), any()) } returns Either.right(punchGetResponse)
+        every { httpClient.httpGet(any(), any(), any()) } returns Either.right(punchSignInGetResponse)
         every { httpClient.httpPost(any(), any(), any()) } throws HTTPException()
         punch(session).shouldBeLeftOfType<HTTPException>()
     }
 
     @Test
     fun `when punch in success should return nothing`() {
-        every { httpClient.httpGet(any(), any(), any()) } returns Either.right(punchGetResponse)
+        every { httpClient.httpGet(any(), any(), any()) } returns Either.right(punchSignInGetResponse)
         every { httpClient.httpPost(any(), any(), any()) } answers {
             thirdArg<Map<String, String>>().run {
                 shouldContain("comment", "")
@@ -121,9 +126,30 @@ class TestDolicloudPuncherImpl {
                 shouldContain("action", action)
                 shouldContain("boutonE", boutonE)
             }
-            Either.right(emptyOKResponse)
+            Either.right(punchSignOutPostResponse)
         }
         punch(session).shouldBeRight()
+    }
+
+    @Test
+    fun `when punch in fails should return error`() {
+        every { httpClient.httpGet(any(), any(), any()) } returns Either.right(punchSignInGetResponse)
+        every { httpClient.httpPost(any(), any(), any()) } returns Either.right(punchSignInGetResponse)
+        punch(session).shouldBeLeftOfType<IllegalStateException>()
+    }
+
+    @Test
+    fun `when punch out success should return nothing`() {
+        every { httpClient.httpGet(any(), any(), any()) } returns Either.right(punchSignOutPostResponse)
+        every { httpClient.httpPost(any(), any(), any()) } returns Either.right(punchSignInGetResponse)
+        punch(session).shouldBeRight()
+    }
+
+    @Test
+    fun `when punch out fails should return error`() {
+        every { httpClient.httpGet(any(), any(), any()) } returns Either.right(punchSignOutPostResponse)
+        every { httpClient.httpPost(any(), any(), any()) } returns Either.right(punchSignOutPostResponse)
+        punch(session).shouldBeLeftOfType<IllegalStateException>()
     }
 
     private fun getSession() = DolicloudPuncherImpl.getSession().attempt().unsafeRunSync()

@@ -78,7 +78,7 @@ internal object DolicloudPuncherImpl : DolicloudPuncher, KoinComponent {
         }
 
     private fun HTTPResponse.checkPunchResponse(parameters: Map<String, String>) {
-        val oldBoutonKey = parameters["boutonE"] ?: parameters.getValue("boutonS")
+        val oldBoutonKey = if (parameters.containsKey("boutonE")) "boutonE" else "boutonS"
         val newBoutonKey = punchBoutonRegex.find(body)!!.groups[1]!!.value
         if (oldBoutonKey == newBoutonKey) throw IllegalStateException("bouton value didn't change: still is $oldBoutonKey")
     }
@@ -91,16 +91,14 @@ internal object DolicloudPuncherImpl : DolicloudPuncher, KoinComponent {
     ) {
         companion object {
             fun fromResponse(response: HTTPResponse) = run {
-                with (punchUserIdRegex) {
-                    val idUser = "idUser" to find(response.body)!!.groups[1]!!.value
-                    val action = "action" to find(response.body)!!.groups[1]!!.value
-                    val bouton = punchBoutonRegex.find(response.body)!!.run {
-                        val key = groups[1]!!.value
-                        val value = groups[2]!!.value.replace(' ', '+')
-                        key to value
-                    }
-                    PunchParameters(idUser, action, bouton, "comment" to "")
+                val idUser = "idUser" to punchUserIdRegex.find(response.body)!!.groups[1]!!.value
+                val action = "action" to  punchActionRegex.find(response.body)!!.groups[1]!!.value
+                val bouton = punchBoutonRegex.find(response.body)!!.run {
+                    val key = groups[1]!!.value
+                    val value = groups[2]!!.value.replace(' ', '+')
+                    key to value
                 }
+                PunchParameters(idUser, action, bouton, "comment" to "")
             }
         }
 
