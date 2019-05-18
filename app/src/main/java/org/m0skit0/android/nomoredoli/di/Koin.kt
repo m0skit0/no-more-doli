@@ -12,6 +12,7 @@ import org.m0skit0.android.nomoredoli.domain.DataRepository
 import org.m0skit0.android.nomoredoli.domain.DataRepositoryImpl
 import org.m0skit0.android.nomoredoli.domain.DolicloudRepository
 import org.m0skit0.android.nomoredoli.domain.DolicloudRepositoryImpl
+import org.m0skit0.android.nomoredoli.viewmodel.LoginViewModel
 import org.m0skit0.android.nomoredoli.viewmodel.PunchViewModel
 
 private const val BASE_URL = BuildConfig.BASE_URL
@@ -25,6 +26,7 @@ internal val baseModules = module {
 
 internal val androidModules = module {
     viewModel { PunchViewModel() }
+    viewModel { LoginViewModel() }
 }
 
 internal val stringModules = module {

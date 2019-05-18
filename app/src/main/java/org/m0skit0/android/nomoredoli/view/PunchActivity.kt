@@ -19,7 +19,9 @@ internal class PunchActivity : AppCompatActivity() {
     companion object : KoinComponent {
         fun launch() {
             with (get<Context>()) {
-                Intent(this, PunchActivity::class.java).run { startActivity(this) }
+                Intent(this, PunchActivity::class.java).apply {
+                    flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
+                }.run { startActivity(this) }
             }
         }
     }
@@ -28,15 +30,19 @@ internal class PunchActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContenView()
+        setPunchView()
         registerObservers()
     }
 
-    private fun setContenView() {
+    private fun setPunchView() {
         DataBindingUtil.setContentView<PunchBinding>(this, R.layout.punch).run {
             viewmodel = punchViewModel
             lifecycleOwner = this@PunchActivity
         }
+    }
+
+    private fun setLoadingLayout() {
+        DataBindingUtil.setContentView<LoadBinding>(this@PunchActivity, R.layout.load)
     }
 
     private fun registerObservers() {
@@ -44,9 +50,9 @@ internal class PunchActivity : AppCompatActivity() {
             toastMessage.observe({ lifecycle }) { toast(it) }
             showLoading.observe({ lifecycle }) {
                 if (it == true) {
-                    DataBindingUtil.setContentView<LoadBinding>(this@PunchActivity, R.layout.load)
+                    setLoadingLayout()
                 } else {
-                    setContenView()
+                    setPunchView()
                 }
             }
         }

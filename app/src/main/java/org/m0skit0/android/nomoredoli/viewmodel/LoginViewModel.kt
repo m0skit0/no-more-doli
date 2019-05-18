@@ -16,6 +16,7 @@ internal class LoginViewModel : ViewModel(), KoinComponent {
     val loginText = MutableLiveData<String>()
     val passwordText = MutableLiveData<String>()
     val toastMessage = MutableLiveData<Int>()
+    val showLoading = MutableLiveData<Boolean>().apply { postValue(true) }
 
     fun onClickSave() {
         if (loginText.value.isNullOrEmpty()) {
@@ -34,4 +35,11 @@ internal class LoginViewModel : ViewModel(), KoinComponent {
             }
         }
     }
+
+    fun checkLoginExists() {
+        dataRepository.getLogin().fold({ showLoading.value = false }) {
+            PunchActivity.launch()
+        }
+    }
+
 }
