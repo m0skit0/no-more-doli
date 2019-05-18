@@ -12,6 +12,8 @@ import org.m0skit0.android.nomoredoli.domain.DataRepository
 import org.m0skit0.android.nomoredoli.domain.DataRepositoryImpl
 import org.m0skit0.android.nomoredoli.domain.DolicloudRepository
 import org.m0skit0.android.nomoredoli.domain.DolicloudRepositoryImpl
+import org.m0skit0.android.nomoredoli.util.AndroidLogger
+import org.m0skit0.android.nomoredoli.util.Logger
 import org.m0skit0.android.nomoredoli.viewmodel.LoginViewModel
 import org.m0skit0.android.nomoredoli.viewmodel.PunchViewModel
 
@@ -22,6 +24,7 @@ internal val baseModules = module {
     single<DolicloudPuncher> { DolicloudPuncherImpl }
     single<DolicloudRepository> { DolicloudRepositoryImpl }
     single<DataRepository> { DataRepositoryImpl }
+    single<Logger> { AndroidLogger }
 }
 
 internal val androidModules = module {
