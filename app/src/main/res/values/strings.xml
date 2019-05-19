@@ -1,11 +1,10 @@
 <resources>
     <string name="app_name">No More Doli</string>
     <string name="punch">Punch</string>
-    <string name="error_no_user">No user registered</string>
-    <string name="error_no_password">No password registered</string>
-    <string name="error_punch">Error when punching</string>
+    <string name="error_no_user">No login registered</string>
+    <string name="error_punch">Error when punching: %1$s</string>
     <string name="punch_success">Punch success!</string>
-    <string name="user">Login</string>
+    <string name="user">User</string>
     <string name="password">Password</string>
     <string name="save">Save</string>
     <string name="invalid_user">Invalid user!</string>

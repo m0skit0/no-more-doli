@@ -2,6 +2,8 @@ package org.m0skit0.android.nomoredoli.viewmodel
 
 import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModel
+import android.content.res.Resources
+import android.support.annotation.StringRes
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.koin.core.KoinComponent
@@ -15,17 +17,20 @@ internal class PunchViewModel : ViewModel(), KoinComponent {
 
     private val punchRepository by inject<DolicloudRepository>()
     private val dataRepository by inject<DataRepository>()
+    private val resources by inject<Resources>()
 
-    val toastMessage = MutableLiveData<Int>()
+    val toastMessage = MutableLiveData<String>()
     val showLoading = MutableLiveData<Boolean>()
 
     fun onClickPunch() {
         showLoading.postValue(true)
         GlobalScope.launch {
-            dataRepository.getLogin().fold({ R.string.error_no_user }) { login ->
+            dataRepository.getLogin().fold({ getString(R.string.error_no_user) }) { login ->
                 with (login) {
                     punchRepository.punchAsync(user, password).await()
-                        .fold({ R.string.error_punch }) { R.string.punch_success }
+                        .fold({ getString(R.string.error_punch, it.message ?: "No error message") }) {
+                            getString(R.string.punch_success)
+                        }
                 }
             }.let { message ->
                 showLoading.postValue(false)
@@ -38,4 +43,6 @@ internal class PunchViewModel : ViewModel(), KoinComponent {
         dataRepository.clearLogin()
         LoginActivity.launch()
     }
+
+    private fun getString(@StringRes id: Int, vararg params: String) = resources.getString(id, *params)
 }

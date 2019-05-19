@@ -1,4 +1,13 @@
 <resources>
     <string name="app_name">Doli Nunca Mais</string>
     <string name="punch">Fichar</string>
+    <string name="clear_login">Borrar login</string>
+    <string name="error_no_user">No hay login</string>
+    <string name="error_punch">Error al fichar: %1$s</string>
+    <string name="invalid_password">Contraseña no válida</string>
+    <string name="invalid_user">Usuario no valido</string>
+    <string name="password">Contraseña</string>
+    <string name="punch_success">Fichaje con éxito</string>
+    <string name="save">Guardar</string>
+    <string name="user">Usuario</string>
 </resources>

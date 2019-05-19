@@ -1,5 +1,7 @@
 package org.m0skit0.android.nomoredoli.di
 
+import android.content.Context
+import android.content.res.Resources
 import org.koin.android.viewmodel.dsl.viewModel
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
@@ -28,6 +30,7 @@ internal val baseModules = module {
 }
 
 internal val androidModules = module {
+    single<Resources> { get<Context>().resources }
     viewModel { PunchViewModel() }
     viewModel { LoginViewModel() }
 }
