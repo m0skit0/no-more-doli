@@ -25,16 +25,18 @@ internal object DolicloudPuncherImpl : DolicloudPuncher, KoinComponent {
     private val baseHeaders = mapOf(
         "User-Agent" to "Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101 Firefox/60.0",
         "Accept" to "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-        "Host" to "innocv.on.dolicloud.com"
+        "Host" to "innocv.on.dolicloud.com",
+        "Connection" to "keep-alive",
+        "Accept-Encoding" to "gzip, deflate, br"
     )
 
     private val baseLoginParameters = mapOf(
         "loginfunction" to "loginfunction",
         "tz" to "1",
-        "tz_string" to "Europe%2FMadrid",
+        "tz_string" to "Europe/Madrid",
         "dst_observed" to "1",
-        "dst_first" to "2019-03-31T01%3A59%3A00Z",
-        "dst_second" to "2019-10-27T02%3A59%3A00Z",
+        "dst_first" to "2019-03-31T01:59:00Z",
+        "dst_second" to "2019-10-27T02:59:00Z",
         "screenwidth" to "1920",
         "screenheight" to "947",
         "dol_hide_topmenu" to "",
@@ -62,9 +64,10 @@ internal object DolicloudPuncherImpl : DolicloudPuncher, KoinComponent {
     }
 
     override fun punch(session: Session): IO<Unit> = IO {
-        val headers = baseHeaders.addSessionId(session).addReferer(punchUrl)
+        var headers = baseHeaders.addSessionId(session).addReferer(punchUrl)
         httpClient.httpGet(punchUrl, headers).fold({ throw it }) { getResponse ->
             val parameters = PunchParameters.fromResponse(getResponse).toMap()
+            headers = baseHeaders.addSessionId(session).addReferer(punchUrl)
             httpClient.httpPost(punchUrl, headers, parameters).fold({ throw it }) { postResponse ->
                 postResponse.checkPunchResponse(parameters)
                 Unit
@@ -97,7 +100,7 @@ internal object DolicloudPuncherImpl : DolicloudPuncher, KoinComponent {
                 val action = "action" to  punchActionRegex.find(response.body)!!.groups[1]!!.value
                 val bouton = punchBoutonRegex.find(response.body)!!.run {
                     val key = groups[1]!!.value
-                    val value = groups[2]!!.value.replace(' ', '+')
+                    val value = groups[2]!!.value
                     key to value
                 }
                 PunchParameters(idUser, action, bouton, "comment" to "")

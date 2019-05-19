@@ -28,7 +28,10 @@ internal object FuelHTTPClient : HTTPClient, KoinComponent {
     private fun tryHttp(block: () -> Either<Throwable, HTTPResponse>) = Try { block() }.toEither().flatten()
 
     private fun Request.perform(headers: Parameters): Either<Throwable, HTTPResponse> = header(headers).run {
-        if (request.method == Method.POST) appendHeader("Content-Length", request.parameters.calculateSize())
+        if (request.method == Method.POST) {
+            appendHeader("Content-Length", request.parameters.calculateSize())
+            appendHeader("Content-Type", "application/x-www-form-urlencoded")
+        }
         logger.logInfo("Request: $request")
         logger.logInfo("Request headers: ${request.headers}")
         responseString().let { (_, response, result) ->
