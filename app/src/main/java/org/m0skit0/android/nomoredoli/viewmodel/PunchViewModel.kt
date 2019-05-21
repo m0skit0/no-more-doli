@@ -28,7 +28,7 @@ internal class PunchViewModel : ViewModel(), KoinComponent {
             dataRepository.getLogin().fold({ getString(R.string.error_no_user) }) { login ->
                 with (login) {
                     punchRepository.punchAsync(user, password).await()
-                        .fold({ getString(R.string.error_punch, it.message ?: "No error message") }) {
+                        .fold({ getString(R.string.error_punch, it.getToastMessage()) }) {
                             getString(R.string.punch_success)
                         }
                 }
@@ -45,4 +45,6 @@ internal class PunchViewModel : ViewModel(), KoinComponent {
     }
 
     private fun getString(@StringRes id: Int, vararg params: String) = resources.getString(id, *params)
+
+    private fun Throwable.getToastMessage() = "${javaClass.simpleName}: ${message ?: ""}"
 }
