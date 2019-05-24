@@ -10,4 +10,6 @@
     <string name="invalid_user">Invalid user!</string>
     <string name="invalid_password">Invalid password!</string>
     <string name="clear_login">Clear login</string>
+    <string name="channel_name" translatable="false">doli.punch.notificationchannel</string>
+    <string name="channel_description" translatable="false">No More Doli Notification Channel</string>
 </resources>
