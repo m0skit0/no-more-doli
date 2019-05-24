@@ -51,6 +51,9 @@ internal class PunchActivity : AppCompatActivity() {
                     setPunchView()
                 }
             }
+            shouldFinish.observe({ lifecycle }) {
+                if (it == true) finish()
+            }
         }
     }
 }

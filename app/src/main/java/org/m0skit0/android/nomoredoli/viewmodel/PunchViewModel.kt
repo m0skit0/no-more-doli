@@ -21,6 +21,7 @@ internal class PunchViewModel : ViewModel(), KoinComponent {
 
     val toastMessage = MutableLiveData<String>()
     val showLoading = MutableLiveData<Boolean>()
+    val shouldFinish = MutableLiveData<Boolean>().apply { postValue(false) }
 
     fun onClickPunch() {
         showLoading.postValue(true)
@@ -41,6 +42,7 @@ internal class PunchViewModel : ViewModel(), KoinComponent {
 
     fun onClickClearLogin() {
         dataRepository.clearLogin()
+        shouldFinish.postValue(true)
         LoginActivity.launch()
     }
 
