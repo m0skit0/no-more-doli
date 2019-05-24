@@ -60,18 +60,14 @@ internal class PunchReceiver : BroadcastReceiver(), KoinComponent {
     }
 
     private fun createNotificationChannel() {
-        // Create the NotificationChannel, but only on API 26+ because
-        // the NotificationChannel class is new and not in the support library
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val name = get<Context>().getString(R.string.channel_name)
-            val descriptionText = get<Context>().getString(R.string.channel_description)
-            val importance = NotificationManager.IMPORTANCE_DEFAULT
-            val channel = NotificationChannel(CHANNEL_ID, name, importance).apply {
-                description = descriptionText
+            val channel = NotificationChannel(CHANNEL_ID, name, NotificationManager.IMPORTANCE_DEFAULT).apply {
+                description = get<Context>().getString(R.string.channel_description)
             }
-            // Register the channel with the system
-            val notificationManager: NotificationManager = get<Context>().getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-            notificationManager.createNotificationChannel(channel)
+            (get<Context>().getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager).run {
+                createNotificationChannel(channel)
+            }
         }
     }
 
