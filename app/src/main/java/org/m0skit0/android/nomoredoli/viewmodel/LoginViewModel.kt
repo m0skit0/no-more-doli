@@ -17,6 +17,7 @@ internal class LoginViewModel : ViewModel(), KoinComponent {
     val passwordText = MutableLiveData<String>()
     val toastMessage = MutableLiveData<Int>()
     val showLoading = MutableLiveData<Boolean>().apply { postValue(true) }
+    val shouldFinish = MutableLiveData<Boolean>().apply { postValue(false) }
 
     fun onClickSave() {
         if (loginText.value.isNullOrEmpty()) {
@@ -31,7 +32,7 @@ internal class LoginViewModel : ViewModel(), KoinComponent {
             passwordText.value?.let { password ->
                 val login = Login(user, password)
                 dataRepository.saveLogin(login)
-                PunchActivity.launch()
+                launchPunchActivity()
             }
         }
     }
@@ -40,8 +41,12 @@ internal class LoginViewModel : ViewModel(), KoinComponent {
         dataRepository.getLogin().fold({
             showLoading.postValue(false)
         }) {
-            PunchActivity.launch()
+            launchPunchActivity()
         }
     }
 
+    private fun launchPunchActivity() {
+        shouldFinish.postValue(true)
+        PunchActivity.launch()
+    }
 }

@@ -56,6 +56,9 @@ internal class LoginActivity : AppCompatActivity() {
                     setLoginLayout()
                 }
             }
+            shouldFinish.observe({ lifecycle }) {
+                if (it == true) finish()
+            }
         }
     }
 }
