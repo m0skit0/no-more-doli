@@ -8,7 +8,6 @@ import android.content.Intent
 import android.os.Build
 import android.support.v4.app.NotificationCompat
 import android.support.v4.app.NotificationManagerCompat
-import android.support.v4.content.ContextCompat.getSystemService
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.koin.core.KoinComponent
@@ -43,7 +42,7 @@ internal class PunchReceiver : BroadcastReceiver(), KoinComponent {
         GlobalScope.launch {
             createNotificationChannel()
             val notificationBuilder = NotificationCompat.Builder(get(), CHANNEL_ID)
-                                        .setSmallIcon(R.mipmap.ic_launcher_round)
+                                        .setSmallIcon(R.drawable.ic_no_more_doli)
                                         .setContentTitle(get<Context>().getString(R.string.app_name))
                                         .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             with (notificationBuilder) {
