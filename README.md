@@ -11,7 +11,9 @@ As of version 1.3, now app supports punching by Intents. This means tasking apps
 The Intent is simple:
 
 Action: org.m0skit0.android.nomoredoli.punch
+
 Package: org.m0skit0.android.nomoredoli
+
 Class: org.m0skit0.android.nomoredoli.PunchReceiver
 
 For example in Llama, these are my conditions for launching the intent:
