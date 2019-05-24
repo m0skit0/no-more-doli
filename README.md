@@ -16,6 +16,8 @@ Package: org.m0skit0.android.nomoredoli
 
 Class: org.m0skit0.android.nomoredoli.PunchReceiver
 
-For example in Llama, these are my conditions for launching the intent:
+When punching through an Intent a notification of the punch and its result will be shown to let you know the punch has been done.
 
-![](https://i.ibb.co/yBSYcm7/Screenshot-2019-05-24-12-00-16-262-com-kebab-Llama.png)
+Here's an example for Llama:
+
+![](https://i.ibb.co/QCxCC4w/Screenshot-2019-05-24-12-00-16-262-com-kebab-Llama.png)
