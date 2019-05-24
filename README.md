@@ -1,4 +1,4 @@
-# no-more-doli
+# NoMoreDoli
 
 Simple app to allow one click punching into our Dolicloud.
 
