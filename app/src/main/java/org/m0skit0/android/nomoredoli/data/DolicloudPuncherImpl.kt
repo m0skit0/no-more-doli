@@ -49,7 +49,7 @@ internal object DolicloudPuncherImpl : DolicloudPuncher, KoinComponent {
     override fun getSession(): IO<Session> = IO {
         httpClient.httpGet(getTokenUrl).fold({ throw it }) {
             val sessionId = it.headers.getValue("Set-Cookie").split(";").first()
-            val token = tokenRegex.find(it.body)!!.groups[1]!!.value
+            val token = tokenRegex.find(it.body).getGroupOrThrow(1, "Cannot find token in body when getting session")
             Session(sessionId, token)
         }
     }
@@ -84,8 +84,13 @@ internal object DolicloudPuncherImpl : DolicloudPuncher, KoinComponent {
 
     private fun HTTPResponse.checkPunchResponse(parameters: Map<String, String>) {
         val oldBoutonKey = if (parameters.containsKey("boutonE")) "boutonE" else "boutonS"
-        val newBoutonKey = punchBoutonRegex.find(body)!!.groups[1]!!.value
-        if (oldBoutonKey == newBoutonKey) throw IllegalStateException("bouton value didn't change: still is $oldBoutonKey")
+        val newBoutonKey = punchBoutonRegex.find(body).getGroupOrThrow(1, "Cannot find bouton in body")
+        if (oldBoutonKey == newBoutonKey) throw NoMoreException("bouton value didn't change: still is $oldBoutonKey")
+    }
+
+    private fun MatchResult?.getGroupOrThrow(index: Int, errorMessage: String): String {
+        this ?: throw NoMoreException(errorMessage)
+        return groups[index]?.value ?: throw NoMoreException(errorMessage)
     }
 
     private data class PunchParameters(
@@ -96,14 +101,15 @@ internal object DolicloudPuncherImpl : DolicloudPuncher, KoinComponent {
     ) {
         companion object {
             fun fromResponse(response: HTTPResponse) = run {
-                val idUser = "idUser" to punchUserIdRegex.find(response.body)!!.groups[1]!!.value
-                val action = "action" to  punchActionRegex.find(response.body)!!.groups[1]!!.value
-                val bouton = punchBoutonRegex.find(response.body)!!.run {
-                    val key = groups[1]!!.value
-                    val value = groups[2]!!.value
+                val idUser = "idUser" to punchUserIdRegex.find(response.body).getGroupOrThrow(1, "Cannot find idUser in body")
+                val action = "action" to  punchActionRegex.find(response.body).getGroupOrThrow(1, "Cannot find action in body")
+                val bouton = punchBoutonRegex.find(response.body).run {
+                    val key = getGroupOrThrow(1, "Cannot find bouton key in body")
+                    val value = getGroupOrThrow(2, "Cannot find bouton value in body")
                     key to value
                 }
-                PunchParameters(idUser, action, bouton, "comment" to "")
+                val comment = "comment" to ""
+                PunchParameters(idUser, action, bouton, comment)
             }
         }
 
