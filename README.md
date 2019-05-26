@@ -6,7 +6,7 @@ Just input your login/password once, then the app will take you everytime to the
 
 ## Punching by intent from tasking apps
 
-As of version 1.3, now app supports punching by Intents. This means tasking apps like Llama, Tasker, Automate, etc... can punch for you given a specific set of conditions.
+As of version 1.3, now app supports punching by Intents. This means tasking apps like Llama, Tasker, Automate, etc... can punch for you given a specific set of conditions. In practice this means you can punch automatically when entering/leaving the office.
 
 The Intent is simple:
 
