@@ -18,6 +18,6 @@ Class: org.m0skit0.android.nomoredoli.PunchReceiver
 
 When punching through an Intent a notification of the punch and its result will be shown to let you know the punch has been done.
 
-Here's an example for Llama:
+Here's an example for Llama that will punch for you when leaving the work area at the given time interval and day of the week:
 
 ![](https://i.ibb.co/QCxCC4w/Screenshot-2019-05-24-12-00-16-262-com-kebab-Llama.png)
