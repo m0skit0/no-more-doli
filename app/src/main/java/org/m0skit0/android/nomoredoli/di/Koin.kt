@@ -1,5 +1,6 @@
 package org.m0skit0.android.nomoredoli.di
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.res.Resources
 import org.koin.android.viewmodel.dsl.viewModel
@@ -18,8 +19,14 @@ import org.m0skit0.android.nomoredoli.util.AndroidLogger
 import org.m0skit0.android.nomoredoli.util.Logger
 import org.m0skit0.android.nomoredoli.viewmodel.LoginViewModel
 import org.m0skit0.android.nomoredoli.viewmodel.PunchViewModel
+import java.text.DateFormat
+import java.text.SimpleDateFormat
+import java.util.*
 
 private const val BASE_URL = BuildConfig.BASE_URL
+
+@SuppressLint("ConstantLocale")
+private val NOTIFICATION_DATE_FORMATTER = SimpleDateFormat("hh:mm", Locale.getDefault())
 
 internal val baseModules = module {
     single<HTTPClient> { FuelHTTPClient }
@@ -27,6 +34,7 @@ internal val baseModules = module {
     single<DolicloudRepository> { DolicloudRepositoryImpl }
     single<DataRepository> { DataRepositoryImpl }
     single<Logger> { AndroidLogger }
+    single<DateFormat> { NOTIFICATION_DATE_FORMATTER }
 }
 
 internal val androidModules = module {

@@ -3,7 +3,7 @@
     <string name="punch">Punch</string>
     <string name="error_no_user">No login registered</string>
     <string name="error_punch">Error when punching: %1$s</string>
-    <string name="punch_success">Punch success!</string>
+    <string name="punch_success">Punch success at %1$s</string>
     <string name="user">User</string>
     <string name="password">Password</string>
     <string name="save">Save</string>

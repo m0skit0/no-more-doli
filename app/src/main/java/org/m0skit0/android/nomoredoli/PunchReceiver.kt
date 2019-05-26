@@ -17,6 +17,7 @@ import org.m0skit0.android.nomoredoli.domain.DataRepository
 import org.m0skit0.android.nomoredoli.domain.DolicloudRepository
 import org.m0skit0.android.nomoredoli.domain.Login
 import org.m0skit0.android.nomoredoli.util.Logger
+import java.text.DateFormat
 import java.util.*
 
 private const val CHANNEL_ID = "382951"
@@ -27,6 +28,7 @@ internal class PunchReceiver : BroadcastReceiver(), KoinComponent {
     private val loginRepository by inject<DataRepository>()
     private val doliRepository by inject<DolicloudRepository>()
     private val logger by inject<Logger>()
+    private val dateFormat by inject<DateFormat>()
 
     override fun onReceive(context: Context, intent: Intent) {
         if (intent.action == PUNCH_INTENT) {
@@ -51,7 +53,8 @@ internal class PunchReceiver : BroadcastReceiver(), KoinComponent {
                     setContentText(get<Context>().getString(R.string.error_punch))
                 }) {
                     logger.logInfo("onReceive >> punch success!")
-                    setContentText(get<Context>().getString(R.string.punch_success))
+                    val time = Calendar.getInstance().time.run { dateFormat.format(this) }
+                    setContentText(get<Context>().getString(R.string.punch_success, time))
                 }
                 val notificationId = Random().nextInt()
                 NotificationManagerCompat.from(get()).notify(notificationId, build())

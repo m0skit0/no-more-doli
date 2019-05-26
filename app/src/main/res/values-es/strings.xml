@@ -7,7 +7,7 @@
     <string name="invalid_password">Contraseña no válida</string>
     <string name="invalid_user">Usuario no valido</string>
     <string name="password">Contraseña</string>
-    <string name="punch_success">Fichaje con éxito</string>
+    <string name="punch_success">Fichaje con éxito a las %1$s</string>
     <string name="save">Guardar</string>
     <string name="user">Usuario</string>
 </resources>
