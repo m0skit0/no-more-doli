@@ -26,7 +26,7 @@ import java.util.*
 private const val BASE_URL = BuildConfig.BASE_URL
 
 @SuppressLint("ConstantLocale")
-private val NOTIFICATION_DATE_FORMATTER = SimpleDateFormat("hh:mm", Locale.getDefault())
+private val NOTIFICATION_DATE_FORMATTER = SimpleDateFormat("HH:mm", Locale.getDefault())
 
 internal val baseModules = module {
     single<HTTPClient> { FuelHTTPClient }
