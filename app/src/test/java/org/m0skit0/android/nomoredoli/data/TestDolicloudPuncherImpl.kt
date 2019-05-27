@@ -52,8 +52,7 @@ class TestDolicloudPuncherImpl : AutoCloseKoinTest() {
     // Parameters from the punch page
     private val idUser = "95"
     private val action = "add"
-    private val boutonE = "Sign+In"
-    private val boutonS = "Sign Out"
+    private val boutonE = "Sign In"
 
     private val user = "user"
     private val password = "password"
