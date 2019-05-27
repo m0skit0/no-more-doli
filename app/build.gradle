@@ -59,4 +59,5 @@ dependencies {
     testImplementation 'io.kotlintest:kotlintest-assertions-arrow:3.3.2'
     testImplementation 'org.amshove.kluent:kluent:1.49'
     testImplementation 'com.google.code.gson:gson:2.8.5'
+    testImplementation "org.koin:koin-test:$koinVersion"
 }

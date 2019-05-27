@@ -8,19 +8,18 @@ import io.kotlintest.matchers.maps.shouldContain
 import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
-import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.koin.core.context.startKoin
-import org.koin.core.context.stopKoin
 import org.koin.dsl.module
+import org.koin.test.AutoCloseKoinTest
+import org.koin.test.inject
 import org.m0skit0.android.nomoredoli.data.http.HTTPClient
 import org.m0skit0.android.nomoredoli.data.http.HTTPException
 import org.m0skit0.android.nomoredoli.data.http.HTTPResponse
 import org.m0skit0.android.nomoredoli.di.stringModules
 
-// NOTE: running all tests in this class gives strange errors, still looking into it
-class TestDolicloudPuncherImpl {
+class TestDolicloudPuncherImpl : AutoCloseKoinTest() {
 
     private val loginGetResponse by lazy {
         val body = javaClass.getResourceAsStream("/login_page.html")!!.bufferedReader().use { it.readText() }
@@ -63,18 +62,16 @@ class TestDolicloudPuncherImpl {
     private lateinit var httpClient: HTTPClient
 
     private val testModule = module {
+        single<DolicloudPuncher> { DolicloudPuncherImpl() }
         factory { httpClient }
     }
+
+    private val dolicloudPuncher by inject<DolicloudPuncher>()
 
     @Before
     fun setup() {
         MockKAnnotations.init(this)
         startKoin { modules(testModule, stringModules) }
-    }
-
-    @After
-    fun cleanup() {
-        stopKoin()
     }
 
     @Test
@@ -134,7 +131,7 @@ class TestDolicloudPuncherImpl {
     fun `when punch in fails should return error`() {
         every { httpClient.httpGet(any(), any(), any()) } returns Either.right(punchSignInGetResponse)
         every { httpClient.httpPost(any(), any(), any()) } returns Either.right(punchSignInGetResponse)
-        punch(session).shouldBeLeftOfType<IllegalStateException>()
+        punch(session).shouldBeLeftOfType<NoMoreException>()
     }
 
     @Test
@@ -148,13 +145,13 @@ class TestDolicloudPuncherImpl {
     fun `when punch out fails should return error`() {
         every { httpClient.httpGet(any(), any(), any()) } returns Either.right(punchSignOutPostResponse)
         every { httpClient.httpPost(any(), any(), any()) } returns Either.right(punchSignOutPostResponse)
-        punch(session).shouldBeLeftOfType<IllegalStateException>()
+        punch(session).shouldBeLeftOfType<NoMoreException>()
     }
 
-    private fun getSession() = DolicloudPuncherImpl.getSession().attempt().unsafeRunSync()
+    private fun getSession() = dolicloudPuncher.getSession().attempt().unsafeRunSync()
 
     private fun login(session: Session, user: String, password: String) =
-        DolicloudPuncherImpl.login(session, user, password).attempt().unsafeRunSync()
+        dolicloudPuncher.login(session, user, password).attempt().unsafeRunSync()
 
-    private fun punch(session: Session) = DolicloudPuncherImpl.punch(session).attempt().unsafeRunSync()
+    private fun punch(session: Session) = dolicloudPuncher.punch(session).attempt().unsafeRunSync()
 }
