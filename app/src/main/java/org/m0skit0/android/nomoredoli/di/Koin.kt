@@ -30,7 +30,7 @@ private val NOTIFICATION_DATE_FORMATTER = SimpleDateFormat("HH:mm", Locale.getDe
 
 internal val baseModules = module {
     single<HTTPClient> { FuelHTTPClient }
-    single<DolicloudPuncher> { DolicloudPuncherImpl }
+    single<DolicloudPuncher> { DolicloudPuncherImpl() }
     single<DolicloudRepository> { DolicloudRepositoryImpl }
     single<DataRepository> { DataRepositoryImpl }
     single<Logger> { AndroidLogger }

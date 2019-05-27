@@ -47,6 +47,7 @@ dependencies {
     // Arrow
     implementation "io.arrow-kt:arrow-core-data:$arrowVersion"
     implementation "io.arrow-kt:arrow-effects-data:$arrowVersion"
+    implementation "io.arrow-kt:arrow-effects-extensions:$arrowVersion"
 
     // Koin
     implementation "org.koin:koin-android:$koinVersion"

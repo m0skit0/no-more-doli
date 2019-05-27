@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.support.annotation.StringRes
 import android.widget.Toast
+import org.m0skit0.android.nomoredoli.data.NoMoreException
 
 internal fun Activity.toast(@StringRes id: Int?) {
     Toast.makeText(this, id!!, Toast.LENGTH_SHORT).show()
@@ -18,4 +19,9 @@ internal fun <T: Activity> Context.launchActivityClearTopNewTask(activityClass: 
     Intent(this, activityClass).apply {
         flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
     }.run { startActivity(this) }
+}
+
+internal fun MatchResult?.getGroupOrThrow(index: Int, errorMessage: String): String {
+    this ?: throw NoMoreException(errorMessage)
+    return groups[index]?.value ?: throw NoMoreException(errorMessage)
 }

@@ -5,4 +5,6 @@ import kotlinx.coroutines.Deferred
 
 internal interface DolicloudRepository {
     fun punchAsync(user: String, password: String): Deferred<Either<Throwable, Unit>>
+    fun punchInAsync(user: String, password: String): Deferred<Either<Throwable, Unit>>
+    fun punchOutAsync(user: String, password: String): Deferred<Either<Throwable, Unit>>
 }
