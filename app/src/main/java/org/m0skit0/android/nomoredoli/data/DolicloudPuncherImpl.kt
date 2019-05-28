@@ -7,6 +7,7 @@ import org.koin.core.inject
 import org.koin.core.qualifier.named
 import org.m0skit0.android.nomoredoli.data.http.HTTPClient
 import org.m0skit0.android.nomoredoli.data.http.HTTPResponse
+import org.m0skit0.android.nomoredoli.util.NoMoreException
 import org.m0skit0.android.nomoredoli.util.getGroupOrThrow
 import kotlin.collections.set
 

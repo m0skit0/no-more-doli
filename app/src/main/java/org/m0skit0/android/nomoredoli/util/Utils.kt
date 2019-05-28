@@ -5,7 +5,6 @@ import android.content.Context
 import android.content.Intent
 import android.support.annotation.StringRes
 import android.widget.Toast
-import org.m0skit0.android.nomoredoli.data.NoMoreException
 
 internal fun Activity.toast(@StringRes id: Int?) {
     Toast.makeText(this, id!!, Toast.LENGTH_SHORT).show()

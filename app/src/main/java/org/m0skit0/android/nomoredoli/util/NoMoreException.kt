@@ -1,4 +1,4 @@
-package org.m0skit0.android.nomoredoli.data
+package org.m0skit0.android.nomoredoli.util
 
 internal class NoMoreException : Exception {
     constructor() : super()

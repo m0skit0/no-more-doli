@@ -18,6 +18,7 @@ import org.m0skit0.android.nomoredoli.data.http.HTTPClient
 import org.m0skit0.android.nomoredoli.data.http.HTTPException
 import org.m0skit0.android.nomoredoli.data.http.HTTPResponse
 import org.m0skit0.android.nomoredoli.di.stringModules
+import org.m0skit0.android.nomoredoli.util.NoMoreException
 
 class TestDolicloudPuncherImpl : AutoCloseKoinTest() {
 
