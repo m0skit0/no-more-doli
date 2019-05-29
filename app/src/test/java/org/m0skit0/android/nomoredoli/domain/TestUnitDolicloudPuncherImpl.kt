@@ -1,4 +1,4 @@
-package org.m0skit0.android.nomoredoli.data
+package org.m0skit0.android.nomoredoli.domain
 
 import arrow.core.left
 import arrow.core.right
@@ -16,13 +16,16 @@ import org.koin.core.context.startKoin
 import org.koin.dsl.module
 import org.koin.test.AutoCloseKoinTest
 import org.koin.test.inject
+import org.m0skit0.android.nomoredoli.data.DolicloudPuncher
+import org.m0skit0.android.nomoredoli.data.DolicloudPuncherImpl
+import org.m0skit0.android.nomoredoli.data.Session
 import org.m0skit0.android.nomoredoli.data.http.HTTPClient
 import org.m0skit0.android.nomoredoli.data.http.HTTPException
 import org.m0skit0.android.nomoredoli.data.http.HTTPResponse
 import org.m0skit0.android.nomoredoli.di.stringModules
 import org.m0skit0.android.nomoredoli.util.NoMoreException
 
-class TestDolicloudPuncherImpl : AutoCloseKoinTest() {
+class TestUnitDolicloudPuncherImpl : AutoCloseKoinTest() {
 
     private val loginGetResponse by lazy {
         val body = javaClass.getResourceAsStream("/login_page.html")!!.bufferedReader().use { it.readText() }

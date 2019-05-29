@@ -24,7 +24,7 @@ import java.net.MalformedURLException
 import java.net.UnknownHostException
 
 // NOTE: this class needs an internet connection to work (or edit the URLs for local ones).
-class TestFuelHTTPClient {
+class TestUnitFuelHTTPClient {
 
     private val malformedURL = "blabla"
     private val nonExistentURL = "http://doesthisexist.xxx"
