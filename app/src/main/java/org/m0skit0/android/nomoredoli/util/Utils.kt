@@ -24,3 +24,5 @@ internal fun MatchResult?.getGroupOrThrow(index: Int, errorMessage: String): Str
     this ?: throw NoMoreException(errorMessage)
     return groups[index]?.value ?: throw NoMoreException(errorMessage)
 }
+
+internal fun Throwable.getErrorMessage() = "${javaClass.simpleName}: ${message}"
