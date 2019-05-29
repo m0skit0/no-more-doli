@@ -1,6 +1,7 @@
 package org.m0skit0.android.nomoredoli.data
 
-import arrow.core.Either
+import arrow.core.left
+import arrow.core.right
 import com.google.gson.Gson
 import io.kotlintest.assertions.arrow.either.shouldBeLeftOfType
 import io.kotlintest.assertions.arrow.either.shouldBeRight
@@ -8,6 +9,7 @@ import io.kotlintest.matchers.maps.shouldContain
 import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
+import io.mockk.verify
 import org.junit.Before
 import org.junit.Test
 import org.koin.core.context.startKoin
@@ -35,12 +37,12 @@ class TestDolicloudPuncherImpl : AutoCloseKoinTest() {
         HTTPResponse(200, mapOf(), body)
     }
 
-    private val punchSignInGetResponse by lazy {
+    private val punchSignInResponse by lazy {
         val body = javaClass.getResourceAsStream("/punch_page_sign_in.html")!!.bufferedReader().use { it.readText() }
         HTTPResponse(200, mapOf(), body)
     }
 
-    private val punchSignOutPostResponse by lazy {
+    private val punchSignOutResponse by lazy {
         val body = javaClass.getResourceAsStream("/punch_page_sign_out.html")!!.bufferedReader().use { it.readText() }
         HTTPResponse(200, mapOf(), body)
     }
@@ -82,7 +84,7 @@ class TestDolicloudPuncherImpl : AutoCloseKoinTest() {
 
     @Test
     fun `when getSession success should return session`() {
-        every { httpClient.httpGet(any(), any(), any()) } returns Either.right(loginGetResponse)
+        every { httpClient.httpGet(any(), any(), any()) } returns loginGetResponse.right()
         getSession().shouldBeRight(Session(sessionId, token))
     }
 
@@ -94,7 +96,7 @@ class TestDolicloudPuncherImpl : AutoCloseKoinTest() {
 
     @Test
     fun `when login success should return nothing`() {
-        every { httpClient.httpPost(any(), any(), any()) } returns Either.right(loginPostResponse)
+        every { httpClient.httpPost(any(), any(), any()) } returns loginPostResponse.right()
         login(session, user, password).shouldBeRight()
     }
 
@@ -107,14 +109,14 @@ class TestDolicloudPuncherImpl : AutoCloseKoinTest() {
 
     @Test
     fun `when punch post error should return error`() {
-        every { httpClient.httpGet(any(), any(), any()) } returns Either.right(punchSignInGetResponse)
+        every { httpClient.httpGet(any(), any(), any()) } returns punchSignInResponse.right()
         every { httpClient.httpPost(any(), any(), any()) } throws HTTPException()
         punch(session).shouldBeLeftOfType<HTTPException>()
     }
 
     @Test
     fun `when punch in success should return nothing`() {
-        every { httpClient.httpGet(any(), any(), any()) } returns Either.right(punchSignInGetResponse)
+        every { httpClient.httpGet(any(), any(), any()) } returns punchSignInResponse.right()
         every { httpClient.httpPost(any(), any(), any()) } answers {
             thirdArg<Map<String, String>>().run {
                 shouldContain("comment", "")
@@ -122,30 +124,66 @@ class TestDolicloudPuncherImpl : AutoCloseKoinTest() {
                 shouldContain("action", action)
                 shouldContain("boutonE", boutonE)
             }
-            Either.right(punchSignOutPostResponse)
+            punchSignOutResponse.right()
         }
         punch(session).shouldBeRight()
     }
 
     @Test
     fun `when punch in fails should return error`() {
-        every { httpClient.httpGet(any(), any(), any()) } returns Either.right(punchSignInGetResponse)
-        every { httpClient.httpPost(any(), any(), any()) } returns Either.right(punchSignInGetResponse)
+        every { httpClient.httpGet(any(), any(), any()) } returns punchSignInResponse.right()
+        every { httpClient.httpPost(any(), any(), any()) } returns punchSignInResponse.right()
         punch(session).shouldBeLeftOfType<NoMoreException>()
     }
 
     @Test
     fun `when punch out success should return nothing`() {
-        every { httpClient.httpGet(any(), any(), any()) } returns Either.right(punchSignOutPostResponse)
-        every { httpClient.httpPost(any(), any(), any()) } returns Either.right(punchSignInGetResponse)
+        every { httpClient.httpGet(any(), any(), any()) } returns punchSignOutResponse.right()
+        every { httpClient.httpPost(any(), any(), any()) } returns punchSignInResponse.right()
         punch(session).shouldBeRight()
     }
 
     @Test
     fun `when punch out fails should return error`() {
-        every { httpClient.httpGet(any(), any(), any()) } returns Either.right(punchSignOutPostResponse)
-        every { httpClient.httpPost(any(), any(), any()) } returns Either.right(punchSignOutPostResponse)
+        every { httpClient.httpGet(any(), any(), any()) } returns punchSignOutResponse.right()
+        every { httpClient.httpPost(any(), any(), any()) } returns punchSignOutResponse.right()
         punch(session).shouldBeLeftOfType<NoMoreException>()
+    }
+
+    @Test
+    fun `when punch in and page is punch out should not punch`() {
+        every { httpClient.httpGet(any(), any(), any()) } returns punchSignOutResponse.right()
+        every { httpClient.httpPost(any(), any(), any()) } returns NoMoreException("Should not be called!").left()
+        punchIn(session).shouldBeRight()
+        verify { httpClient.httpGet(any(), any(), any()) }
+        verify(inverse = true) { httpClient.httpPost(any(), any(), any()) }
+    }
+
+    @Test
+    fun `when punch out and page is punch in should not punch`() {
+        every { httpClient.httpGet(any(), any(), any()) } returns punchSignInResponse.right()
+        every { httpClient.httpPost(any(), any(), any()) } returns NoMoreException("Should not be called!").left()
+        punchOut(session).shouldBeRight()
+        verify { httpClient.httpGet(any(), any(), any()) }
+        verify(inverse = true) { httpClient.httpPost(any(), any(), any()) }
+    }
+
+    @Test
+    fun `when punch in and page is punch in should punch`() {
+        every { httpClient.httpGet(any(), any(), any()) } returns punchSignInResponse.right()
+        every { httpClient.httpPost(any(), any(), any()) } returns punchSignOutResponse.right()
+        punchIn(session).shouldBeRight()
+        verify { httpClient.httpGet(any(), any(), any()) }
+        verify { httpClient.httpPost(any(), any(), any()) }
+    }
+
+    @Test
+    fun `when punch out and page is punch out should punch`() {
+        every { httpClient.httpGet(any(), any(), any()) } returns punchSignOutResponse.right()
+        every { httpClient.httpPost(any(), any(), any()) } returns punchSignInResponse.right()
+        punchOut(session).shouldBeRight()
+        verify { httpClient.httpGet(any(), any(), any()) }
+        verify { httpClient.httpPost(any(), any(), any()) }
     }
 
     private fun getSession() = dolicloudPuncher.getSession().attempt().unsafeRunSync()
@@ -154,4 +192,6 @@ class TestDolicloudPuncherImpl : AutoCloseKoinTest() {
         dolicloudPuncher.login(session, user, password).attempt().unsafeRunSync()
 
     private fun punch(session: Session) = dolicloudPuncher.punch(session).attempt().unsafeRunSync()
+    private fun punchIn(session: Session) = dolicloudPuncher.punchIn(session).attempt().unsafeRunSync()
+    private fun punchOut(session: Session) = dolicloudPuncher.punchOut(session).attempt().unsafeRunSync()
 }
